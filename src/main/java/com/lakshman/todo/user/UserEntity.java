@@ -42,7 +42,7 @@ public class UserEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @Column(name = "providerT")
+    // @Column(name = "provider")
     @Enumerated(EnumType.STRING)
     private ProviderType providerType;
 
@@ -61,4 +61,6 @@ public class UserEntity extends BaseEntity {
     @JoinTable(name = "user_roles", // mapping table
             joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles = new HashSet<>();
+
+    private String randomName;
 }
