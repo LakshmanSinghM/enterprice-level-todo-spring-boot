@@ -1,3 +1,7 @@
+# context for the api base to be added in endpoints
+server:
+  servlet:
+    context-path: /api
 spring:
   application:
     name: Enterprice level todo
@@ -20,6 +24,18 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        # liquibase migration stuff
   liquibase:
     enabled: false
-    change-log: classpath:db/changelog/db.changelog-master.yaml       
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+jwt:
+  secret: mysupersecretkeymysupersecretkey123456mysupersecretkeymysupersecretkey123456mysupersecretkeymysupersecretkey123456
+  access-token-expiration: 900000     # should be 10-15 minutes
+  refresh-token-expiration: 604800000  # should be 1-30 days 
+  issuer: todo-app    
+
+
+
+
+
+  # later we will replace these values with the environment variable names
