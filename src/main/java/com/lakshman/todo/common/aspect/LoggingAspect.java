@@ -36,11 +36,11 @@ public class LoggingAspect {
     // }
 
     // Apply logging to all layers: Controller, Service, Repository under feature
-   // packages
-    @Around("execution(* com.lakshman.todo..controller..*(..)) || " +
-            "execution(* com.lakshman.todo..service..*(..)) || " +
-            "execution(* com.lakshman.todo..repository..*(..)) || " +
-            "execution(* com.lakshman.todo..*(..))")
+    // packages
+    @Around("within(* com.lakshman.todo..controller..*(..)) || " +
+            "within(* com.lakshman.todo..service..*(..)) || " +
+            "within(* com.lakshman.todo..repository..*(..)) || " +
+            "within(* com.lakshman.todo..*(..))")
     public Object logAllLayers(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         String className = joinPoint.getTarget().getClass().getSimpleName();

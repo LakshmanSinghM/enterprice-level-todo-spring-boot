@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuditAspect {
 
-    private static final Logger log = LoggerFactory.getLogger(AuditAspect.class);
+//    private static final Logger log = LoggerFactory.getLogger(AuditAspect.class);
 
     // Audit all refresh-token operations
     // @AfterReturning("execution(* com.preowendly.feature.auth.AuthService.refreshAccessToken(..))")

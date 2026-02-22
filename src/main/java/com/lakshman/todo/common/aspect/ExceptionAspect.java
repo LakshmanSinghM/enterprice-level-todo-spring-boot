@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class ExceptionAspect {
     private static final Logger log = LoggerFactory.getLogger(ExceptionAspect.class);
 
-    @AfterThrowing(pointcut = "execution(* com.preowendly.feature..*(..))", throwing = "ex")
+    @AfterThrowing(pointcut = "within(* com.lakshman.todo..*(..))", throwing = "ex")
     public void logException(JoinPoint joinPoint, Exception ex) {
         log.error("Exception in {}.{}() with cause = {}",
                 joinPoint.getSignature().getDeclaringTypeName(),

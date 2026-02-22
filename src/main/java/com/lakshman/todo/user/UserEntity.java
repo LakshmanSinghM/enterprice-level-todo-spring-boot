@@ -3,11 +3,10 @@ package com.lakshman.todo.user;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.ManyToAny;
-
 import com.lakshman.todo.base.BaseEntity;
 import com.lakshman.todo.contants.enums.ProviderType;
 import com.lakshman.todo.contants.enums.StatusType;
+import com.lakshman.todo.user.permission.PermissionEntity;
 import com.lakshman.todo.user.role.RoleEntity;
 
 import jakarta.persistence.Column;
@@ -21,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,6 +59,10 @@ public class UserEntity extends BaseEntity {
     @JoinTable(name = "user_roles", // mapping table
             joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<PermissionEntity> directPermissions = new HashSet<>();
 
     private String randomName;
 }

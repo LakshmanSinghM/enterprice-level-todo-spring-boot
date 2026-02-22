@@ -2,6 +2,7 @@ package com.lakshman.todo.security;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -27,7 +28,7 @@ public class JWTHelper {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
 
-    public String generateAccessToken(String email, Long userId, List<String> roles, List<String> permissions) {
+    public String generateAccessToken(String email, Long userId, Set<String> roles, Set<String> permissions) {
         // logger here
         return Jwts.builder()
                 .setSubject(email)
@@ -41,11 +42,12 @@ public class JWTHelper {
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(String email, Long id) {
         // logger here
         return Jwts.builder()
                 .setSubject(email)
                 .claim("tokenType", "REFRESH")
+                .claim("id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpiration()))
                 .signWith(key, SignatureAlgorithm.HS256)

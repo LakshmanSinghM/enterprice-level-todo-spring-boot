@@ -3,3 +3,9 @@ databaseChangeLog:
      file: db/changelog/v1-init-db.sql
  - include:
      file: db/changelog/v2-add-default-role.sql
+ - include:
+     file: db/changelog/v3-add-permission-table.sql
+ - include:
+     file: db/changelog/v4-add-permissions-to-table.sql
+ - include:
+     file: db/changelog/v5-assign-permission-to-role.sql
