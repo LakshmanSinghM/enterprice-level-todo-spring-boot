@@ -23,81 +23,110 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JWTHelper jwtHelper;
-    private final JWTProperties jwtProperties;
+        private final UserRepository userRepository;
+        private final RoleRepository roleRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final JWTHelper jwtHelper;
+        private final JWTProperties jwtProperties;
 
-    @Transactional
-    public ApiResponse<AuthResponse> registerUserUsingEmailAndPassword(AuthRequest authRequest,
-            HttpServletResponse response) {
+        @Transactional
+        public ApiResponse<AuthResponse> registerUserUsingEmailAndPassword(AuthRequest authRequest,
+                        HttpServletResponse response) {
 
-        if (userRepository.existsByEmail(authRequest.getEmail().toLowerCase())) {
-            return ResponseBuilders.buildResponseWithErrorMessage("User already exists with this email");
+                String email = authRequest.getEmail().toLowerCase();
+
+                if (userRepository.existsByEmail(email)) {
+                        return ResponseBuilders.buildResponseWithErrorMessage("User already exists with this email");
+                }
+
+                RoleEntity userRole = roleRepository.findByName(RoleType.USER)
+                                .orElseThrow(() -> new RuntimeException("Default USER role not found"));
+
+                UserEntity userEntity = new UserEntity();
+                userEntity.setEmail(authRequest.getEmail());
+                userEntity.setPassword(passwordEncoder.encode(authRequest.getPassword()));
+                userEntity.getRoles().add(userRole);
+
+                userRepository.save(userEntity);
+
+                // Reload with full authorities (avoids lazy issues)
+                UserEntity savedUser = userRepository.findUserWithAuthorities(email)
+                                .orElseThrow(() -> new RuntimeException("User not found after save"));
+
+                AuthResponse authResponse = generateTokenAndGetAuthResponse(savedUser, response, authRequest);
+
+                return ResponseBuilders.buildSuccessResponse(authResponse, "User registered successfully");
         }
 
-        // UserEntity userEntity = new UserEntity();
-        // userEntity.setEmail(authRequest.getEmail());
-        // userEntity.setPassword(passwordEncoder.encode(authRequest.getPassword()));
-        // userRepository.save(userEntity);
+        private AuthResponse generateTokenAndGetAuthResponse(
+                        UserEntity userEntity, HttpServletResponse response,
+                        AuthRequest authRequest) {
 
-        // RoleEntity roleEntity = roleRepository.findByName(RoleType.USER).get();
+                Set<String> roles = userEntity.getRoles()
+                                .stream()
+                                .map(role -> role.getName().name())
+                                .collect(Collectors.toSet());
 
-        // AuthResponse authResponse = generateTokenAndGetAuthResponse(userEntity, response, authRequest);
+                Set<String> permissions = getEffectivePermissions(userEntity);
 
-        return ResponseBuilders.buildSuccessResponse(null, "User registered successfully");
-    }
+                // Generate tokens
+                String accessToken = jwtHelper.generateAccessToken(
+                                userEntity.getEmail(),
+                                userEntity.getId(),
+                                roles,
+                                permissions);
 
-    private AuthResponse generateTokenAndGetAuthResponse(
-            UserEntity userEntity, HttpServletResponse response,
-            AuthRequest authRequest) {
+                String refreshToken = jwtHelper.generateRefreshToken(
+                                userEntity.getEmail(),
+                                userEntity.getId());
 
-        // Generate tokens
-        // String email, Long userId, List<String> roles, List<String> permissions
-        String accessToken = jwtHelper.generateAccessToken(
-                authRequest.getEmail().toLowerCase(),
-                userEntity.getId(), Set.of(RoleType.USER.name()), Set.of());
+                // Send tokens in cookies
 
-        String refreshToken = jwtHelper.generateRefreshToken(authRequest.getEmail().toLowerCase(), userEntity.getId());
+                saveTokenInCookie(response, "accessToken", accessToken, jwtProperties.getAccessTokenExpiration());
+                saveTokenInCookie(response, "refreshToken", refreshToken, jwtProperties.getRefreshTokenExpiration());
 
-        // Send tokens in cookies
-        saveTokenInCookie(response, "accessToken", accessToken, jwtProperties.getAccessTokenExpiration());
-        saveTokenInCookie(response, "refreshToken", refreshToken, jwtProperties.getRefreshTokenExpiration());
+                // Prepare response body
+                return AuthResponse.builder()
+                                .accessToken(accessToken)
+                                .refreshToken(refreshToken)
+                                .build();
+        }
 
-        // Prepare response body
-        AuthResponse authResponse = AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .roles(userEntity.getRoles()
-                        .stream()
-                        .map(role -> role.getName().name())
-                        .collect(Collectors.toSet()))
-                .permissions(Set.of())
-                // .permissions(userEntity.getPermissions()
-                // .stream()
-                // .map(Permission::getName)
-                // .toList())
-                .build();
-        return authResponse;
-    }
+        private void saveTokenInCookie(HttpServletResponse response,
+                        String name,
+                        String token,
+                        long maxAgeSeconds) {
 
-    private void saveTokenInCookie(HttpServletResponse response,
-            String name,
-            String token,
-            long maxAgeSeconds) {
+                Cookie cookie = new Cookie(name, token);
+                cookie.setHttpOnly(true); // prevent JS access
+                // cookie.setSecure(true); // HTTPS only (must in prod)
+                cookie.setPath("/");
+                cookie.setMaxAge((int) maxAgeSeconds);
+                cookie.setAttribute("SameSite", "Strict"); // CSRF protection
+                response.addCookie(cookie);
+        }
 
-        Cookie cookie = new Cookie(name, token);
-        cookie.setHttpOnly(true); // prevent JS access
-        // cookie.setSecure(true); // HTTPS only (must in prod)
-        cookie.setPath("/");
-        cookie.setMaxAge((int) maxAgeSeconds);
-        cookie.setAttribute("SameSite", "Strict"); // CSRF protection
-        response.addCookie(cookie);
-    }
+        private Set<String> getEffectivePermissions(UserEntity user) {
+                Set<String> permissions = new HashSet<>();
+
+                log.info("The user permissions are coming like this  " + user);
+                log.info("The user permissions are coming like this  " + user.getRoles());
+
+                // Role permissions
+                user.getRoles().forEach(
+                                role -> role.getPermissions()
+                                                .forEach(permission -> permissions.add(permission.getName())));
+
+                // Direct permissions
+                user.getDirectPermissions().forEach(permission -> permissions.add(permission.getName()));
+
+                return permissions;
+        }
 }

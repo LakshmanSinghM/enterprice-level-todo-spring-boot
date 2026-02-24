@@ -9,3 +9,7 @@ databaseChangeLog:
      file: db/changelog/v4-add-permissions-to-table.sql
  - include:
      file: db/changelog/v5-assign-permission-to-role.sql
+ - include:
+     file: db/changelog/v6-rename-cols-of-base-table.sql
+ - include:
+     file: db/changelog/v7-rename-user-col.sql

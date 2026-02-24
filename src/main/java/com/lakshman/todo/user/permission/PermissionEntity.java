@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "permissions")
@@ -29,21 +30,21 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class PermissionEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(unique = true, nullable = false)
-    private PermissionType name;
+    private String name;
 
     private String description;
 
-    @ManyToMany(mappedBy = "permissions")
-    private Set<RoleEntity> roles = new HashSet<>();
+    // @ManyToMany(mappedBy = "permissions")
+    // private Set<RoleEntity> roles = new HashSet<>();
 
-    @ManyToMany(mappedBy = "directPermissions")
-    private Set<UserEntity> users = new HashSet<>();
+    // @ManyToMany(mappedBy = "directPermissions")
+    // private Set<UserEntity> users = new HashSet<>();
 }

@@ -23,22 +23,24 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity {
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @CreatedBy
-    @Column(updatable = false)
+    @Column(updatable = false, name = "created_by")
     private Long createdBy;
 
     @LastModifiedBy
+    @Column(name = "updated_by")
     private Long updatedBy;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_deleted")
     private Boolean isDeleted = false;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_active")
     private Boolean isActive = true;
 }

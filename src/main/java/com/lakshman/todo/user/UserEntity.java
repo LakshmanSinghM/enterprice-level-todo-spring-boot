@@ -26,6 +26,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "users")
@@ -34,6 +35,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = { "roles", "directPermissions" })
 public class UserEntity extends BaseEntity {
 
     @Id
@@ -42,6 +44,7 @@ public class UserEntity extends BaseEntity {
 
     // @Column(name = "provider")
     @Enumerated(EnumType.STRING)
+    @Column(name = "provider_type")
     private ProviderType providerType;
 
     @Enumerated(EnumType.STRING)
@@ -50,9 +53,15 @@ public class UserEntity extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    private String provider_id;
+    @Column(name = "provider_id")
+    private String providerId;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+    
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -63,6 +72,4 @@ public class UserEntity extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private Set<PermissionEntity> directPermissions = new HashSet<>();
-
-    private String randomName;
 }

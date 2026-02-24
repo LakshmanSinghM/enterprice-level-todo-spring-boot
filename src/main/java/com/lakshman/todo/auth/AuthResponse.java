@@ -18,6 +18,8 @@ public class AuthResponse {
 
     private String accessToken;
     private String refreshToken;
-    private Set<String> roles;
-    private Set<String> permissions;
+
+    // These two things will be set in the access token itself then decode on the FE and use
+    // private Set<String> roles;
+    // private Set<String> permissions;
 }

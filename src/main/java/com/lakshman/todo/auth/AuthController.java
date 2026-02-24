@@ -16,10 +16,12 @@ import com.lakshman.todo.common.utils.ResponseBuilders;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -33,8 +35,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> registerUserUsingEmailAndPassword(
             @RequestBody AuthRequest request, HttpServletResponse response) {
-
-        System.out.println("The req body i s " + request);
+        log.info("The req body is" + request);
         // do the logging here
         // call the service
         // do the loggin

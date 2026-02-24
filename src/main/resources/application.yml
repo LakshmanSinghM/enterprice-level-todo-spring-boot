@@ -28,10 +28,14 @@ jwt:
   secret: mysupersecretkeymysupersecretkey123456mysupersecretkeymysupersecretkey123456mysupersecretkeymysupersecretkey123456
   access-token-expiration: 900000     # should be 10-15 minutes
   refresh-token-expiration: 604800000  # should be 1-30 days 
-  issuer: todo-app    
+  issuer: todo-app   
 
-
-
-
+ # Logging level config
+# logging:
+#   level:
+#     org:
+#       springframework: DEBUG
+#     com:
+#       lakshman: DEBUG
 
   # later we will replace these values with the environment variable names
