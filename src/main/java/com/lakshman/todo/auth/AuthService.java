@@ -1,15 +1,14 @@
 package com.lakshman.todo.auth;
 
-import java.security.Permission;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.lakshman.todo.common.configuration.JWTProperties;
+import com.lakshman.todo.common.configuration.JWTProperties; 
+import com.lakshman.todo.common.contants.ResponseOrErrorMessages;
 import com.lakshman.todo.common.dto.ApiResponse;
 import com.lakshman.todo.common.utils.ResponseBuilders;
 import com.lakshman.todo.contants.enums.ProviderType;
@@ -45,7 +44,8 @@ public class AuthService {
                 String email = authRequest.getEmail().toLowerCase();
 
                 if (userRepository.existsByEmail(email)) {
-                        return ResponseBuilders.buildResponseWithErrorMessage("User already exists with this email");
+                        return ResponseBuilders.buildResponseWithErrorMessage(
+                                        ResponseOrErrorMessages.USER_ALREADY_EXIST_WITH_MAIL);
                 }
 
                 RoleEntity userRole = roleRepository.findByName(RoleType.USER)
@@ -67,7 +67,7 @@ public class AuthService {
 
                 AuthResponse authResponse = generateTokenAndGetAuthResponse(savedUser, response, authRequest);
 
-                return ResponseBuilders.buildSuccessResponse(authResponse, "User registered successfully");
+                return ResponseBuilders.buildSuccessResponse(authResponse, ResponseOrErrorMessages.REGISTERED);
         }
 
         @Transactional
@@ -77,15 +77,17 @@ public class AuthService {
                 String email = loginRequest.getEmail().toLowerCase();
 
                 if (!userRepository.existsByEmail(email)) {
-                        return ResponseBuilders.buildResponseWithErrorMessage("User does not exists with this email");
+                        return ResponseBuilders.buildResponseWithErrorMessage(
+                                        ResponseOrErrorMessages.USER_NOT_FOUND_WITH_MAIL);
                 }
 
                 // Reload with full authorities (avoids lazy issues)
                 UserEntity savedUser = userRepository.findUserWithAuthorities(email, RoleType.USER)
-                                .orElseThrow(() -> new RuntimeException("User not found"));
+                                .orElseThrow(() -> new RuntimeException(ResponseOrErrorMessages.USER_NOT_FOUND));
 
                 if (!passwordEncoder.matches(loginRequest.getPassword(), savedUser.getPassword())) {
-                        return ResponseBuilders.buildResponseWithErrorMessage("Invalid email or password");
+                        return ResponseBuilders
+                                        .buildResponseWithErrorMessage(ResponseOrErrorMessages.INVALID_EMAIL_OR_PWD);
                 }
 
                 AuthRequest authRequest = new AuthRequest();
@@ -94,7 +96,7 @@ public class AuthService {
 
                 AuthResponse authResponse = generateTokenAndGetAuthResponse(savedUser, response, authRequest);
 
-                return ResponseBuilders.buildSuccessResponse(authResponse, "User logged in successfully");
+                return ResponseBuilders.buildSuccessResponse(authResponse, ResponseOrErrorMessages.LOGGED_IN);
         }
 
         private AuthResponse generateTokenAndGetAuthResponse(
