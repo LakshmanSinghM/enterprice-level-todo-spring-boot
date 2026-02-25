@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import com.lakshman.todo.common.configuration.JWTProperties;
 import com.lakshman.todo.common.dto.ApiResponse;
 import com.lakshman.todo.common.utils.ResponseBuilders;
+import com.lakshman.todo.contants.enums.ProviderType;
 import com.lakshman.todo.contants.enums.RoleType;
+import com.lakshman.todo.contants.enums.StatusType;
 import com.lakshman.todo.security.JWTHelper;
 import com.lakshman.todo.user.UserEntity;
 import com.lakshman.todo.user.UserRepository;
@@ -50,19 +52,49 @@ public class AuthService {
                                 .orElseThrow(() -> new RuntimeException("Default USER role not found"));
 
                 UserEntity userEntity = new UserEntity();
-                userEntity.setEmail(authRequest.getEmail());
+                userEntity.setEmail(email);
                 userEntity.setPassword(passwordEncoder.encode(authRequest.getPassword()));
                 userEntity.getRoles().add(userRole);
+                userEntity.setStatus(StatusType.ACTIVE);
+                userEntity.setProviderType(ProviderType.LOCAL);
+                userEntity.setProviderId("LocalProviderId");
+                // userEntity.getCreatedBy()// change to string type, updatedBy also
 
                 userRepository.save(userEntity);
-
                 // Reload with full authorities (avoids lazy issues)
-                UserEntity savedUser = userRepository.findUserWithAuthorities(email)
+                UserEntity savedUser = userRepository.findUserWithAuthorities(email, RoleType.USER)
                                 .orElseThrow(() -> new RuntimeException("User not found after save"));
 
                 AuthResponse authResponse = generateTokenAndGetAuthResponse(savedUser, response, authRequest);
 
                 return ResponseBuilders.buildSuccessResponse(authResponse, "User registered successfully");
+        }
+
+        @Transactional
+        public ApiResponse<AuthResponse> loginUserUsingEmailAndPassword(LoginRequest loginRequest,
+                        HttpServletResponse response) {
+
+                String email = loginRequest.getEmail().toLowerCase();
+
+                if (!userRepository.existsByEmail(email)) {
+                        return ResponseBuilders.buildResponseWithErrorMessage("User does not exists with this email");
+                }
+
+                // Reload with full authorities (avoids lazy issues)
+                UserEntity savedUser = userRepository.findUserWithAuthorities(email, RoleType.USER)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                if (!passwordEncoder.matches(loginRequest.getPassword(), savedUser.getPassword())) {
+                        return ResponseBuilders.buildResponseWithErrorMessage("Invalid email or password");
+                }
+
+                AuthRequest authRequest = new AuthRequest();
+                authRequest.setEmail(email);
+                authRequest.setPassword(loginRequest.getPassword());
+
+                AuthResponse authResponse = generateTokenAndGetAuthResponse(savedUser, response, authRequest);
+
+                return ResponseBuilders.buildSuccessResponse(authResponse, "User logged in successfully");
         }
 
         private AuthResponse generateTokenAndGetAuthResponse(

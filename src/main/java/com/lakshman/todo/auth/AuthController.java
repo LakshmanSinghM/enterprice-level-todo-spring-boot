@@ -15,6 +15,7 @@ import com.lakshman.todo.common.dto.ApiResponse;
 import com.lakshman.todo.common.utils.ResponseBuilders;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,13 +34,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthResponse>> registerUserUsingEmailAndPassword(
-            @RequestBody AuthRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<AuthResponse>> registerUserUsingEmailAndPassword( 
+        @Valid @RequestBody AuthRequest request, HttpServletResponse response) {
         log.info("The req body is" + request);
         // do the logging here
         // call the service
         // do the loggin
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authService.registerUserUsingEmailAndPassword(request, response));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> loginUserUsingEmailAndPassword(
+             @Valid  @RequestBody LoginRequest request, HttpServletResponse response) {
+        log.info("The login req body is" + request);
+        // do the logging here
+        // call the service
+        // do the loggin
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authService.loginUserUsingEmailAndPassword(request, response));
     }
 }
