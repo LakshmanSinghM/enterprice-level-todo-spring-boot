@@ -32,10 +32,14 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(registry -> {
-            registry.requestMatchers(PublicRoutes.PUBLIC_PATHS).permitAll();
-            registry.anyRequest().authenticated();
-        }).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
+
+        return httpSecurity
+                .cors(cors -> {
+                })
+                .csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(registry -> {
+                    registry.requestMatchers(PublicRoutes.PUBLIC_PATHS).permitAll();
+                    registry.anyRequest().authenticated();
+                }).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
     @Bean

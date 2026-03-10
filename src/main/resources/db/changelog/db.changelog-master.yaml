@@ -13,3 +13,5 @@ databaseChangeLog:
      file: db/changelog/v6-rename-cols-of-base-table.sql
  - include:
      file: db/changelog/v7-rename-user-col.sql
+ - include:
+     file: db/changelog/v8-add-profileimage-col.sql

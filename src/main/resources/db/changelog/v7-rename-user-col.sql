@@ -20,4 +20,3 @@ ALTER TABLE users DROP COLUMN "providerType";
 
 -- changeset lakshman:1771963866988-7
 ALTER TABLE users DROP COLUMN "randomName";
-

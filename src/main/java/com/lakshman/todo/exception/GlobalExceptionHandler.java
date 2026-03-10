@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        
+
         ApiResponseWithErrors<Void> allErrors = new ApiResponseWithErrors<>();
         allErrors.setData(null);
         allErrors.setErrors(errors);
@@ -51,5 +51,14 @@ public class GlobalExceptionHandler {
         allErrors.setMessage("Something went wrong- " + ex.getMessage());
         allErrors.setSuccess(false);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(allErrors);
+    }
+
+    @ExceptionHandler(ResourceAlreadyExists.class)
+    public ResponseEntity<ApiResponseWithErrors<Void>> handleResourceAlreadyExists(ResourceAlreadyExists ex) {
+        ApiResponseWithErrors<Void> allErrors = new ApiResponseWithErrors<>();
+        allErrors.setData(null);
+        allErrors.setMessage(ex.getMessage());
+        allErrors.setSuccess(false);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(allErrors);
     }
 }

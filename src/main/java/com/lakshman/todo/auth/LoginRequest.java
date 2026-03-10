@@ -13,22 +13,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "password")
-public class AuthRequest {
+public class LoginRequest {
     @NotBlank
     @Email
     private String email;
 
     @NotBlank
     private String password;
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static  class GoogleRequest {
-        @NotBlank
-        private String code;
-    }
     // private String code; // Google authorization code
     // private String provider; // GOOGLE, LOCAL, TWITTER
 }

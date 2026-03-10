@@ -1,4 +1,1 @@
 make first api that give placeholders, navigations, filters, coursel , and more things when user comes first time
-
-
-

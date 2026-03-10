@@ -3,9 +3,9 @@ spring:
     name: Enterprice level todo
     # Database connection settings
   datasource:
-      url: jdbc:postgresql://localhost:5432/todo_db
-      username: postgres
-      password: root
+      url: ${DATABASE_URL}
+      username: ${DATABASE_USER}
+      password: ${DATABASE_PWD}
       driver-class-name: org.postgresql.Driver
 
       hikari:
@@ -25,10 +25,14 @@ spring:
     enabled: false
     change-log: classpath:db/changelog/db.changelog-master.yaml
 jwt:
-  secret: mysupersecretkeymysupersecretkey123456mysupersecretkeymysupersecretkey123456mysupersecretkeymysupersecretkey123456
+  secret: ${JWT_SECRET}
   access-token-expiration: 900000     # should be 10-15 minutes
   refresh-token-expiration: 604800000  # should be 1-30 days 
-  issuer: todo-app   
+  issuer: todo-app
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_SECRET}
+  redirect-uri: ${REDIRECT_URI}
 
  # Logging level config
 # logging:

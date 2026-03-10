@@ -1,11 +1,11 @@
 package com.lakshman.todo.security;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-
-import javax.crypto.SecretKey;
+ 
 
 import org.springframework.stereotype.Component;
 
@@ -15,18 +15,20 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class JWTHelper {
 
-    private final JWTProperties jwtProperties;
-    private SecretKey key;
+    private final JWTProperties jwtProperties; 
 
-    public JWTHelper(JWTProperties jwtProperties) {
-        this.jwtProperties = jwtProperties;
-        this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
-    }
+    // public JWTHelper(JWTProperties jwtProperties) {
+    // this.jwtProperties = jwtProperties;
+    // this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+    // }
 
     public String generateAccessToken(String email, Long userId, Set<String> roles, Set<String> permissions) {
         // logger here
@@ -38,7 +40,7 @@ public class JWTHelper {
                 .claim("tokenType", "ACCESS")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpiration()))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -50,45 +52,54 @@ public class JWTHelper {
                 .claim("id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpiration()))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // public String extractUsername(String token) {
-    // return extractClaim(token, Claims::getSubject);
-    // }
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 
-    // public List<String> extractRoles(String token) {
-    // return extractAllClaims(token).get("roles", List.class);
-    // }
+    public List<String> extractRoles(String token) {
+        return extractAllClaims(token).get("roles", List.class);
+    }
 
-    // public Date extractExpiration(String token) {
-    // return extractClaim(token, Claims::getExpiration);
-    // }
+    private Key getSignKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
-    // public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-    // final Claims claims = extractAllClaims(token);
-    // return claimsResolver.apply(claims);
-    // }
+    public List<String> extractPermissions(String token) {
+        return extractAllClaims(token).get("permissions", List.class);
+    }
 
-    // public boolean validateToken(String token) {
-    // try {
-    // extractAllClaims(token);
-    // return !isTokenExpired(token);
-    // } catch (JwtException | IllegalArgumentException e) {
-    // return false;
-    // }
-    // }
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
 
-    // private boolean isTokenExpired(String token) {
-    // return extractExpiration(token).before(new Date());
-    // }
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 
-    // private Claims extractAllClaims(String token) {
-    // return Jwts.parserBuilder()
-    // .setSigningKey(key)
-    // .build()
-    // .parseClaimsJws(token)
-    // .getBody();
-    // }
+    public boolean validateToken(String token) {
+        try {
+            extractAllClaims(token);
+            return !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 }

@@ -3,6 +3,7 @@ package com.lakshman.todo.user;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lakshman.todo.base.BaseEntity;
 import com.lakshman.todo.contants.enums.ProviderType;
 import com.lakshman.todo.contants.enums.StatusType;
@@ -61,15 +62,21 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "last_name")
     private String lastName;
-    
+
+    @Column(name = "profile_image")
+    private String profileImage;
+
+    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", // mapping table
             joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonIgnore
     private Set<RoleEntity> roles = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    @JsonIgnore
     private Set<PermissionEntity> directPermissions = new HashSet<>();
 }
