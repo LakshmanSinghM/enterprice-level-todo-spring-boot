@@ -34,6 +34,18 @@ google:
   client-secret: ${GOOGLE_SECRET}
   redirect-uri: ${REDIRECT_URI}
 
+# actuator to the health details and other things
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        # in dev only dont show real vals in prod
+  endpoint:
+    env:
+      show-values: ALWAYS
+        # include: "*"  
+
  # Logging level config
 # logging:
 #   level:

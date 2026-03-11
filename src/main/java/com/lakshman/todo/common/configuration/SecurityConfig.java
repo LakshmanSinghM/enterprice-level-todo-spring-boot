@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .cors(cors -> {
                 })
                 .csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(registry -> {
+                    // registry.requestMatchers("/actuator/**").permitAll();
                     registry.requestMatchers(PublicRoutes.PUBLIC_PATHS).permitAll();
                     registry.anyRequest().authenticated();
                 }).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
