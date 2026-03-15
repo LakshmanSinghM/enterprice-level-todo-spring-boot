@@ -2,12 +2,9 @@ package com.lakshman.todo.user.role;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import com.lakshman.todo.base.BaseEntity;
 import com.lakshman.todo.contants.enums.RoleType;
-import com.lakshman.todo.user.UserEntity;
 import com.lakshman.todo.user.permission.PermissionEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -34,6 +34,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(allErrors);
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiResponseWithErrors<Void>> handleInvalidToken(InvalidTokenException ex) {
+        ApiResponseWithErrors<Void> allErrors = new ApiResponseWithErrors<>();
+        allErrors.setData(null);
+        allErrors.setMessage(ex.getMessage());
+        allErrors.setSuccess(false);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(allErrors);
+    }
+
     @ExceptionHandler(InsufficientAuthenticationException.class)
     public ResponseEntity<ApiResponseWithErrors<Void>> handleInsufficientAuthenticationException(
             InsufficientAuthenticationException ex) {
@@ -41,16 +50,7 @@ public class GlobalExceptionHandler {
         allErrors.setData(null);
         allErrors.setMessage(ex.getMessage());
         allErrors.setSuccess(false);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(allErrors);
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponseWithErrors<Void>> handleRuntimeException(RuntimeException ex) {
-        ApiResponseWithErrors<Void> allErrors = new ApiResponseWithErrors<>();
-        allErrors.setData(null);
-        allErrors.setMessage("Something went wrong- " + ex.getMessage());
-        allErrors.setSuccess(false);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(allErrors);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(allErrors);
     }
 
     @ExceptionHandler(ResourceAlreadyExists.class)
@@ -60,5 +60,14 @@ public class GlobalExceptionHandler {
         allErrors.setMessage(ex.getMessage());
         allErrors.setSuccess(false);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(allErrors);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponseWithErrors<Void>> handleRuntimeException(RuntimeException ex) {
+        ApiResponseWithErrors<Void> allErrors = new ApiResponseWithErrors<>();
+        allErrors.setData(null);
+        allErrors.setMessage("Something went wrong- " + ex.getMessage());
+        allErrors.setSuccess(false);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(allErrors);
     }
 }

@@ -27,19 +27,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryEntity extends BaseEntity{
+public class CategoryEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private String description;
 
-    @ManyToMany(mappedBy = "categories")
-    private Set<TodoEntity> todos = new HashSet<>();
+    private String image;
+
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "user_id", nullable = false)
+    // private UserEntity user;
+
+    // @ManyToMany(mappedBy = "categories")
+    // private Set<TodoEntity> todos = new HashSet<>();
 }

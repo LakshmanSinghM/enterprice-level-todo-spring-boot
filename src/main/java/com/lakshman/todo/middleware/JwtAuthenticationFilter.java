@@ -3,18 +3,15 @@ package com.lakshman.todo.middleware;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.lakshman.todo.security.CustomUserDetailService;
+import com.lakshman.todo.exception.InvalidTokenException;
 import com.lakshman.todo.security.JWTHelper;
 
 import jakarta.servlet.FilterChain;
@@ -23,25 +20,33 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTHelper jwtHelper;
-    private final CustomUserDetailService customUserDetailService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String token = extractToken(request);
+        boolean validValidation = jwtHelper.validateToken(token);
 
-        if (token != null && jwtHelper.validateToken(token)) {
+        // if (!validValidation) {
+        //     throw new InvalidTokenException("JWT Token is invalid or expired");
+        // }
+
+        if (token != null && validValidation) {
 
             String email = jwtHelper.extractUsername(token);
             List<String> roles = jwtHelper.extractRoles(token);
             List<String> permissions = jwtHelper.extractPermissions(token);
+
+            log.info("User-email = " + email + "   Roles=" + roles);
 
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
@@ -81,7 +86,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-
                 if ("accessToken".equals(cookie.getName())) {
                     return cookie.getValue();
                 }

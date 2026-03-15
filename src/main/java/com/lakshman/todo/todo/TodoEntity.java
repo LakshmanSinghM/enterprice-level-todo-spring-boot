@@ -32,6 +32,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TodoEntity extends BaseEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

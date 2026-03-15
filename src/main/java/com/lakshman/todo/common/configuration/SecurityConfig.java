@@ -17,18 +17,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.lakshman.todo.middleware.JwtAccessDeniedHandler;
+import com.lakshman.todo.middleware.JwtAuthenticationEntryPoint;
 import com.lakshman.todo.middleware.JwtAuthenticationFilter;
 import com.lakshman.todo.security.CustomUserDetailService;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-    @Autowired
-    private CustomUserDetailService userDetailService;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomUserDetailService userDetailService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -40,7 +45,12 @@ public class SecurityConfig {
                     // registry.requestMatchers("/actuator/**").permitAll();
                     registry.requestMatchers(PublicRoutes.PUBLIC_PATHS).permitAll();
                     registry.anyRequest().authenticated();
-                }).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
+                })
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
+                .build();
     }
 
     @Bean

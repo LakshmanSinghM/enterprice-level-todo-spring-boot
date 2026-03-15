@@ -15,3 +15,7 @@ databaseChangeLog:
      file: db/changelog/v7-rename-user-col.sql
  - include:
      file: db/changelog/v8-add-profileimage-col.sql
+ - include:
+     file: db/changelog/v9-add-category-todo.sql
+ - include:
+     file: db/changelog/v10-add-category-pre-table.sql
