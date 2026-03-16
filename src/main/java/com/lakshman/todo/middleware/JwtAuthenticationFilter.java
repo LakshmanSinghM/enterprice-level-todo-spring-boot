@@ -11,7 +11,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.lakshman.todo.exception.InvalidTokenException;
 import com.lakshman.todo.security.JWTHelper;
 
 import jakarta.servlet.FilterChain;
@@ -36,17 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = extractToken(request);
         boolean validValidation = jwtHelper.validateToken(token);
 
-        // if (!validValidation) {
-        //     throw new InvalidTokenException("JWT Token is invalid or expired");
-        // }
-
         if (token != null && validValidation) {
 
             String email = jwtHelper.extractUsername(token);
             List<String> roles = jwtHelper.extractRoles(token);
             List<String> permissions = jwtHelper.extractPermissions(token);
 
-            log.info("User-email = " + email + "   Roles=" + roles);
+            log.info("User-email = " + email + "   Roles=" + roles + " Permissions = " + permissions);
 
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 

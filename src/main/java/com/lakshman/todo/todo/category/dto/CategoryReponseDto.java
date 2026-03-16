@@ -1,11 +1,17 @@
 package com.lakshman.todo.todo.category.dto;
 
-public interface CategoryReponseDto {
-    Long getId();
+import lombok.Getter;
+import lombok.Setter;
 
-    String getName();
+@Setter
+@Getter
+public class CategoryReponseDto {
 
-    String getDescription();
+    Long id;
 
-    String getImage();
+    String name;
+
+    String description;
+
+    String image;
 }

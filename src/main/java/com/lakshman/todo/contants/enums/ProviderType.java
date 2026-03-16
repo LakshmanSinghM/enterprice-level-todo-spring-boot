@@ -7,4 +7,3 @@ public enum ProviderType {
     INSTAGRAM,
     LOCAL
 }
-

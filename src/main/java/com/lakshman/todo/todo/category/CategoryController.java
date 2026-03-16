@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.lakshman.todo.common.dto.ApiResponse;
 import com.lakshman.todo.todo.category.dto.CategoryReponseDto;
+import com.lakshman.todo.todo.category.dto.CategoryRequestDto;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +24,12 @@ public class CategoryController {
 
     private final CategoryServiceResolver resolver;
 
-    // @PreAuthorize("hasAuthority('todo:create')")
+    @PreAuthorize("hasAuthority('category:create') or hasAuthority('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<CategoryReponseDto>> createTodoCategory(@Valid @RequestBody Long id) {
+    public ResponseEntity<ApiResponse<CategoryReponseDto>> createTodoCategory(
+            @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         log.info("the request coming to the category controller ");
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        CategoryService categoryService = resolver.resolve(false);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(categoryRequestDto));
     }
 }

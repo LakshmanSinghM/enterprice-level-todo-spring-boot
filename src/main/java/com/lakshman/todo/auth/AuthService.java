@@ -188,6 +188,8 @@ public class AuthService {
                                 roles,
                                 permissions);
 
+                log.info("Logging with these stuffs Roles = " + roles + "  Permissions = " + permissions);
+
                 String refreshToken = jwtHelper.generateRefreshToken(
                                 userEntity.getEmail(),
                                 userEntity.getId());
