@@ -3,7 +3,9 @@ package com.lakshman.todo.common.configuration;
 public class PublicRoutes {
 
     public static final String[] PUBLIC_PATHS = {
-            "/api/v1/auth/register", "/api/v1/auth/google", "/api/v1/auth/login", "/swagger-ui/**","/actuator/**",
+            "/api/v1/auth/register", "/api/v1/auth/google", "/api/v1/auth/login",
+             "/api/v1/auth/admin/**",
+            "/swagger-ui/**","/actuator/**",
             "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs",
             "/api/v1/auth/test/**", "/swagger-ui/index.html",
             "/test", "/test/**", "/public", "/", "/webjars/**", "/configuration/**",

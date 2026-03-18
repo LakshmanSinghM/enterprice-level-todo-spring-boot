@@ -25,7 +25,7 @@ public class AuthRequest {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    static  class GoogleRequest {
+    public static class GoogleRequest {
         @NotBlank
         private String code;
     }

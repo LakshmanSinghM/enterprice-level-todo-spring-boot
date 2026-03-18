@@ -141,19 +141,49 @@ public class AuthService {
                 return ResponseBuilders.buildResponseWithErrorMessage("Something went wrong please try again");
         }
 
-        @Transactional
-        public ApiResponse<AuthResponse> loginUserUsingEmailAndPassword(LoginRequest loginRequest,
-                        HttpServletResponse response) {
+        // @Transactional
+        // public ApiResponse<AuthResponse> loginUserUsingEmailAndPassword(LoginRequest loginRequest,
+        //                 HttpServletResponse response) {
+
+        //         String email = loginRequest.getEmail().toLowerCase();
+
+        //         if (!userRepository.existsByEmail(email)) {
+        //                 return ResponseBuilders.buildResponseWithErrorMessage(
+        //                                 ResponseOrErrorMessages.USER_NOT_FOUND_WITH_MAIL);
+        //         }
+
+        //         // Reload with full authorities (avoids lazy issues)
+        //         UserEntity savedUser = userRepository.findUserWithAuthorities(email, RoleType.USER)
+        //                         .orElseThrow(() -> new RuntimeException(ResponseOrErrorMessages.USER_NOT_FOUND));
+
+        //         if (!passwordEncoder.matches(loginRequest.getPassword(), savedUser.getPassword())) {
+        //                 return ResponseBuilders
+        //                                 .buildResponseWithErrorMessage(ResponseOrErrorMessages.INVALID_EMAIL_OR_PWD);
+        //         }
+
+        //         AuthRequest authRequest = new AuthRequest();
+        //         authRequest.setEmail(email);
+        //         authRequest.setPassword(loginRequest.getPassword());
+
+        //         AuthResponse authResponse = generateTokenAndGetAuthResponse(savedUser, response);
+
+        //         return ResponseBuilders.buildSuccessResponse(authResponse, ResponseOrErrorMessages.LOGGED_IN,
+        //                         SystemCustomCode.LOGGED_IN);
+        // }
+
+         @Transactional
+        public ApiResponse<AuthResponse> loginUsingEmailAndPassword(LoginRequest loginRequest,
+                        HttpServletResponse response, RoleType roleType ) {
 
                 String email = loginRequest.getEmail().toLowerCase();
 
-                if (!userRepository.existsByEmail(email)) {
+                if (!userRepository.existsByEmailAndRoles_Name(email, roleType)) {
                         return ResponseBuilders.buildResponseWithErrorMessage(
                                         ResponseOrErrorMessages.USER_NOT_FOUND_WITH_MAIL);
                 }
 
                 // Reload with full authorities (avoids lazy issues)
-                UserEntity savedUser = userRepository.findUserWithAuthorities(email, RoleType.USER)
+                UserEntity savedUser = userRepository.findUserWithAuthorities(email, roleType)
                                 .orElseThrow(() -> new RuntimeException(ResponseOrErrorMessages.USER_NOT_FOUND));
 
                 if (!passwordEncoder.matches(loginRequest.getPassword(), savedUser.getPassword())) {
@@ -170,6 +200,7 @@ public class AuthService {
                 return ResponseBuilders.buildSuccessResponse(authResponse, ResponseOrErrorMessages.LOGGED_IN,
                                 SystemCustomCode.LOGGED_IN);
         }
+
 
         private AuthResponse generateTokenAndGetAuthResponse(
                         UserEntity userEntity, HttpServletResponse response) {

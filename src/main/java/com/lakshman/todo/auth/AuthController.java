@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lakshman.todo.common.dto.ApiResponse;
+import com.lakshman.todo.contants.enums.RoleType;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -50,6 +51,6 @@ public class AuthController {
         // call the service
         // do the loggin
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(authService.loginUserUsingEmailAndPassword(request, response));
+                .body(authService.loginUsingEmailAndPassword(request, response, RoleType.USER));
     }
 }
