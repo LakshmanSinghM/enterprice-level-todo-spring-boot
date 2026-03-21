@@ -1,8 +1,9 @@
+# this is for the local develoment default profile
 spring:
   application:
     name: Enterprice level todo
     
-  # Redis config
+  # Redis connection config
   data:
     redis:
       host: ${REDIS_HOST}
