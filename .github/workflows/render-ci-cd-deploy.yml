@@ -51,3 +51,5 @@ jobs:
       - name: Trigger Render Redeploy
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+    # We can remove this to redeploy but that needs an extra service on render to watch the image is changed or not

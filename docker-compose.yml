@@ -19,10 +19,10 @@ services:
     env_file:
       - .env
     restart: always
-    environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PWD}
-      POSTGRES_DB: ${DATABASE_NAME}
+    # environment:
+    #   POSTGRES_USER: ${DATABASE_USER}
+    #   POSTGRES_PASSWORD: ${DATABASE_PWD}
+    #   POSTGRES_DB: ${DATABASE_NAME}
     # ports:
     #   - "5432:5432" left side machine/local port and right side container port
     volumes:
@@ -46,20 +46,22 @@ services:
       - "8080:8080"
     env_file:
       - .env
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PWD: ${DATABASE_PWD}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      JWT_SECRET: ${JWT_SECRET}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_SECRET: ${GOOGLE_SECRET}
-      REDIRECT_URI: ${REDIRECT_URI} 
-      APP_PORT: ${APP_PORT}
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION}
-      JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION}
+
+    # These things will come from the env file we only need build args if needed to have in the docker compose 
+    # environment:
+    #   DATABASE_URL: ${DATABASE_URL}
+    #   DATABASE_USER: ${DATABASE_USER}
+    #   DATABASE_PWD: ${DATABASE_PWD}
+    #   REDIS_HOST: ${REDIS_HOST}
+    #   REDIS_PORT: ${REDIS_PORT}
+    #   JWT_SECRET: ${JWT_SECRET}
+    #   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+    #   GOOGLE_SECRET: ${GOOGLE_SECRET}
+    #   REDIRECT_URI: ${REDIRECT_URI} 
+    #   APP_PORT: ${APP_PORT}
+    #   SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+    #   JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION}
+    #   JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION}
     depends_on:
       postgres:
         condition: service_healthy
@@ -92,8 +94,6 @@ networks:
 volumes:
   postgres_data:
   redis_data:
-
-
 
 
   # Reset full docker stuff

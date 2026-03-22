@@ -38,7 +38,7 @@ spring:
         format_sql: true
         # liquibase migration stuff
   liquibase:
-    enabled: false
+    enabled: ${MIGRATE_UP}
     change-log: classpath:db/changelog/db.changelog-master.yaml
 jwt:
   secret: ${JWT_SECRET}
