@@ -1,21 +1,23 @@
 services:
 
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: todo-nginx
-  #   restart: always
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-  #   depends_on:
-  #     - app
-  #   networks:
-  #     - todo-network
+  nginx:
+    image: nginx:latest
+    container_name: todo-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
+    networks:
+      - todo-network
 
   postgres:
     image: postgres:15
     container_name: advance_todo_db-container
+    env_file:
+      - .env
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_USER}
@@ -33,7 +35,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - todo-network  
+      - todo-network
 
   app:
     image: advance-todo-backend
@@ -42,6 +44,8 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_USER: ${DATABASE_USER}
@@ -51,26 +55,46 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_SECRET: ${GOOGLE_SECRET}
-      REDIRECT_URI: ${REDIRECT_URI}
+      REDIRECT_URI: ${REDIRECT_URI} 
+      APP_PORT: ${APP_PORT}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION}
+      JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION}
     depends_on:
-        postgres:
-          condition: service_healthy
-        # redis:
-        #   condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
-        - todo-network    
+      - todo-network
 
-  # redis:
-  #   image: redis:7
-  #   container_name: todo-redis
-  #   restart: always
-  #   expose:
-  #     - "6379"
-  #   networks:
-  #     - todo-network 
+  redis:
+    image: redis:7
+    container_name: todo-redis
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - redis_data:/data
+    expose:
+      - "6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - todo-network
 
 networks:
   todo-network:
 
 volumes:
   postgres_data:
+  redis_data:
+
+
+
+
+  # Reset full docker stuff
+  # docker system prune -a --volumes

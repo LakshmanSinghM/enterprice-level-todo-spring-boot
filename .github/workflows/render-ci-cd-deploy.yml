@@ -38,7 +38,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t lakshmansde/advance-todo:$IMAGE_TAG .
-          docker tag lakshmansde/advance-todo:$IMAGE_TAG lakshmansde/advance-todo:latest
+          docker tag advance-todo-backend:latest lakshmansde/advance-todo:latest
 
       # 6️⃣ Push Docker image to Docker Hub
       - name: Push Docker image

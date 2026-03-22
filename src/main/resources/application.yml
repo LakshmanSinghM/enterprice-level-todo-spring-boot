@@ -2,12 +2,18 @@
 spring:
   application:
     name: Enterprice level todo
-    
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
+
   # Redis connection config
   data:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+      ssl:
+        enabled: ${REDIS_SSL}
       timeout: 60000
   cache:
     type: redis
@@ -36,8 +42,8 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 jwt:
   secret: ${JWT_SECRET}
-  access-token-expiration: 1800000     # should be 10-15 minutes
-  refresh-token-expiration: 604800000  # should be 1-30 days 
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}  # should be 10-15 minutes
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}  # should be 1-30 days 
   issuer: todo-app
 google:
   client-id: ${GOOGLE_CLIENT_ID}

@@ -5,10 +5,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.lakshman.todo.contants.enums.RoleType;
 import com.lakshman.todo.user.dto.UserProfileResponse;
 
+@Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     boolean existsByEmail(String email);

@@ -1,4 +1,4 @@
 # this is for aws deployment
 
 
-# i dont think it will be needed because we get things from the env in docker compose 
+# I dont think it will be needed because we get things from the env in docker compose

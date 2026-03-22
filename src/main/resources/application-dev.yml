@@ -1,1 +1,31 @@
-# this is for the render deployment this will run in dev profile
+# This is for the render deployment this will run in dev profile
+# application.yml + application-dev.yml
+# will run and overrides the application.yml
+
+# this is for the local develoment default profile
+spring:
+# liquibase migration stuff
+  liquibase:
+    enabled: true
+
+# actuator to the health details and other things
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        # in dev only dont show real vals in prod
+  endpoint:
+    env:
+      show-values: ALWAYS
+        # include: "*"  
+
+ # Logging level config
+# logging:
+#   level:
+#     org:
+#       springframework: DEBUG
+#     com:
+#       lakshman: DEBUG
+
+  # later we will replace these values with the environment variable names

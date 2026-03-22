@@ -1,2 +1,96 @@
-# this is for render deployment
-# i dont think it will be needed because we get things from the env in docker compose 
+# This is for render deployment
+
+# Here ngix and db not required as they are managed by the render itself
+# run
+# docker compose -f docker-compose-dev.yml up  // if -d then in background will run
+services:
+
+  # nginx:
+  #   image: nginx:latest
+  #   container_name: todo-nginx
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - app
+  #   networks:
+  #     - todo-network
+
+  # postgres:
+  #   image: postgres:15
+  #   container_name: advance_todo_db-container
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: ${DATABASE_USER}
+  #     POSTGRES_PASSWORD: ${DATABASE_PWD}
+  #     POSTGRES_DB: ${DATABASE_NAME}
+  #   # ports:
+  #   #   - "5432:5432" left side machine/local port and right side container port
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   expose:
+  #     - "5432"
+  #   healthcheck:
+  #     test: [ "CMD-SHELL", "pg_isready -U ${DATABASE_USER}" ]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - todo-network
+
+  app:
+    image: advance-todo-backend
+    build: .
+    container_name: advance-todo-app-container
+    restart: always
+    env_file:
+      - .env.developement
+    ports:
+      - "8080:8080"
+    # environment:
+    #   DATABASE_URL: ${DATABASE_URL}
+    #   DATABASE_USER: ${DATABASE_USER}
+    #   DATABASE_PWD: ${DATABASE_PWD}
+    #   REDIS_HOST: ${REDIS_HOST}
+    #   REDIS_PORT: ${REDIS_PORT}
+    #   JWT_SECRET: ${JWT_SECRET}
+    #   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+    #   GOOGLE_SECRET: ${GOOGLE_SECRET}
+    #   REDIRECT_URI: ${REDIRECT_URI}
+    #   APP_PORT: ${APP_PORT}
+    #   SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+    #   JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION}
+    #   JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION}
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+      # redis:
+      #   condition: service_started
+    # networks:
+    #   - todo-network
+
+  # redis:
+  #   image: redis:7
+  #   container_name: todo-redis
+  #   restart: always
+  #   volumes:
+  #     - redis_data:/data
+  #   expose:
+  #     - "6379"
+  #   healthcheck:
+  #     test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - todo-network
+
+# networks:
+#   todo-network:
+
+
+# volumes:
+#   postgres_data:
+#   redis_data:
