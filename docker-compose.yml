@@ -74,27 +74,30 @@ services:
     image: redis:7
     container_name: todo-redis
     restart: always
-    env_file:
-      - .env
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: >
+      sh -c "redis-server --requirepass $REDIS_PASSWORD"
     volumes:
       - redis_data:/data
     expose:
       - "6379"
     healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+      test: [ "CMD-SHELL", "redis-cli -a $REDIS_PASSWORD ping | grep PONG" ]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
     networks:
       - todo-network
 
 networks:
   todo-network:
 
+
 volumes:
   postgres_data:
   redis_data:
 
-
-  # Reset full docker stuff
-  # docker system prune -a --volumes
+    # Reset full docker stuff
+    # docker system prune -a --volumes

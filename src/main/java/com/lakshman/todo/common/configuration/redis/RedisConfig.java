@@ -1,4 +1,4 @@
-package com.lakshman.todo.common.configuration;
+package com.lakshman.todo.common.configuration.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

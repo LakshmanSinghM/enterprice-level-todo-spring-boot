@@ -28,7 +28,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<ApiResponse<CategoryReponseDto>> createTodoCategory(
             @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
-        log.info("the request coming to the category controller ");
+        log.info("The request coming to the category controller ");
         CategoryService categoryService = resolver.resolve(false);
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(categoryRequestDto));
     }

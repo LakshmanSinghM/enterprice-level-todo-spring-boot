@@ -15,9 +15,9 @@ management:
       exposure:
         include: "*"
         # in dev only dont show real vals in prod
-  endpoint:
-    env:
-      show-values: ALWAYS
+  # endpoint:
+  #   env:
+  #     show-values: ALWAYS
         # include: "*"  
 
  # Logging level config

@@ -10,11 +10,12 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
+      # username: ${REDIS_USERNAME}
       password: ${REDIS_PASSWORD}
       ssl:
         enabled: ${REDIS_SSL}
       timeout: 60000
+      connect-timeout: 6000
   cache:
     type: redis
 
@@ -49,6 +50,13 @@ google:
   client-id: ${GOOGLE_CLIENT_ID}
   client-secret: ${GOOGLE_SECRET}
   redirect-uri: ${REDIRECT_URI}
+
+# Rate limit config
+ratelimit:
+  api-limit: ${API_REQUEST_LIMIT}
+  api-window-time: ${API_REQUEST_WINDOW_TIME}
+  api-wait-time: ${API_REQUEST_WAIT_TIME}
+
 
 # actuator to the health details and other things
 management:

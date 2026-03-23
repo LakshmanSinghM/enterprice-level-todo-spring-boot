@@ -2,10 +2,23 @@ package com.lakshman.todo.common.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.lakshman.todo.middleware.RateLimitInterceptor;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
 public class WebCorsConfig implements WebMvcConfigurer {
+
+    private final RateLimitInterceptor interceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(interceptor);
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
