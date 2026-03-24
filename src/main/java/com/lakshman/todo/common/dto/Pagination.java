@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-class Pagination {
+public class Pagination {
     private Integer page;
     private Integer size;
     private Long totalElements;
-    private Long totalPages;
+    private Integer totalPages;
     private boolean isLast;
 }

@@ -1,12 +1,16 @@
 package com.lakshman.todo.common.utils;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.lakshman.todo.common.dto.ApiResponse;
 import com.lakshman.todo.common.dto.ApiResponseWithErrors;
+import com.lakshman.todo.common.dto.ApiResponseWithPagination;
+import com.lakshman.todo.common.dto.Pagination;
 
 public class ResponseBuilders {
 
@@ -44,28 +48,37 @@ public class ResponseBuilders {
         return apiResponse;
     }
 
-    // public static <T> ApiResponseWithPagination<List<T>>
-    // buildSuccessPaginatedResponse(Page<T> res, String message) {
-    // ApiResponseWithPagination<List<T>> response = new
-    // ApiResponseWithPagination<>();
-    // response.setData(res.getContent());
-    // response.setMessage(message);
-    // response.setSuccess(true);
-    // response.setPagination(getPaginationDto(res));
-    // return response;
-    // }
+    public static <T> ApiResponseWithPagination<List<T>> buildSuccessPaginatedResponse(Page<T> res, String message,
+            String sysCode) {
+        ApiResponseWithPagination<List<T>> response = new ApiResponseWithPagination<>();
+        response.setData(res.getContent());
+        response.setMessage(message);
+        response.setSuccess(true);
+        response.setPagination(getPaginationDto(res));
+        response.setSystemCode(sysCode);
+        return response;
+    }
 
-    // private static <T> PaginationDto getPaginationDto(Page<T> res) {
-    // PaginationDto paginationDto = new PaginationDto();
-    // paginationDto.setFirst(res.isFirst());
-    // paginationDto.setLast(res.isLast());
-    // paginationDto.setNumberOfElements(res.getNumberOfElements());
-    // paginationDto.setPageNumber(res.getNumber());
-    // paginationDto.setPageSize(res.getSize());
-    // paginationDto.setTotalElements(res.getTotalElements());
-    // paginationDto.setTotalPages(res.getTotalPages());
-    // return paginationDto;
-    // }
+    public static <T> ApiResponseWithPagination<List<T>> buildSuccessPaginatedResponse(Page<?> res, List<T> list,
+            String message, String sysCode) {
+        ApiResponseWithPagination<List<T>> response = new ApiResponseWithPagination<>();
+        response.setData(list);
+        response.setMessage(message);
+        response.setSuccess(true);
+        response.setPagination(getPaginationDto(res));
+        response.setSystemCode(sysCode);
+        return response;
+    }
+
+    private static <T> Pagination getPaginationDto(Page<?> res) {
+        Pagination paginationDto = new Pagination();
+        paginationDto.setLast(res.isLast());
+        paginationDto.setPage(res.getNumber());
+        paginationDto.setSize(res.getSize());
+        paginationDto.setTotalElements(res.getTotalElements());
+        paginationDto.setTotalPages(res.getTotalPages());
+        return paginationDto;
+    }
 
     public static <T> ApiResponseWithErrors<T> buildResponseWithErrors(String message, Map<String, String> errors) {
         ApiResponseWithErrors<T> apiErrorResponse = new ApiResponseWithErrors<>();
