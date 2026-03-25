@@ -50,6 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
         responseDto.setDescription(savedCategory.getDescription());
         responseDto.setImage(savedCategory.getImage());
 
+
         return ResponseBuilders.buildSuccessResponse(responseDto, "Category created successfully", "CREATED");
     }
 
@@ -58,21 +59,11 @@ public class CategoryServiceImpl implements CategoryService {
     public ApiResponseWithPagination<List<CategoryReponseDto>> getTodos(int page, int size) {
 
         Page<CategoryListView> categoryPage = categoryRepository.findAllBy(PageRequest.of(page, size));
-        List<CategoryReponseDto> list = categoryPage.getContent()
-                .stream().map(p -> new CategoryReponseDto(
-                        p.getId(),
-                        p.getName(),
-                        p.getDescription(),
-                        p.getImage()))
-                .toList();
 
-    // Pagination pagination = new Pagination(
-    //         categoryPage.getNumber(),
-    //         categoryPage.getSize(),
-    //         categoryPage.getTotalElements(),
-    //         categoryPage.getTotalPages(),
-    //         categoryPage.isLast()
-    // );
+        // implement the distributing locking mechanism here RedisLockService so that once expired 10K req dont hit simul..
+        List<CategoryReponseDto> list = categoryPage.getContent()
+                .stream().map(p -> new CategoryReponseDto(p.getId(), p.getName(), p.getDescription(), p.getImage()))
+                .toList();
 
         return ResponseBuilders.buildSuccessPaginatedResponse(categoryPage, list, "Fetched the category",
                 "FETCHED-CATEGORY");
