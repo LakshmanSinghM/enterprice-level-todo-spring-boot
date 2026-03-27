@@ -1,4 +1,4 @@
-# this is for aws deployment
+# This is for aws deployment
 
 
 # I dont think it will be needed because we get things from the env in docker compose
@@ -21,7 +21,7 @@ services:
     image: postgres:15
     container_name: advance_todo_db-container
     env_file:
-      - .env
+      - .env.production
     restart: always
     # environment:
     #   POSTGRES_USER: ${DATABASE_USER}
@@ -49,7 +49,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env
+      - .env.production
 
     # These things will come from the env file we only need build args if needed to have in the docker compose 
     # environment:
@@ -79,7 +79,7 @@ services:
     container_name: todo-redis
     restart: always
     env_file:
-      - .env
+      - .env.production
     volumes:
       - redis_data:/data
     expose:
