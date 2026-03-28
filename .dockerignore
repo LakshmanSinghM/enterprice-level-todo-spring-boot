@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+
+# Node (if frontend inside repo)
+node_modules
+npm-debug.log
+
+# Logs
+*.log
+logs/
+*.out
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Maven / Gradle build output
+target/
+build/
+
+# Except jar (IMPORTANT)
+!target/*.jar
+
+# Test files
+src/test/
+
+# Docker files (optional)
+Dockerfile
+docker-compose.yml
+
+# Env files (VERY IMPORTANT - security)
+.env
+.env.*
+*.env
+
+# Temporary files
+tmp/
+temp/
+
+# Coverage
+coverage/
+
+*.md
+docs/
+scripts/

@@ -1,0 +1,1 @@
+# manual deployment for the ec2 for debugging and all
