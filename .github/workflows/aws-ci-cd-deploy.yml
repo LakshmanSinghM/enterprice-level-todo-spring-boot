@@ -1,63 +1,146 @@
-name: Spring Boot Production CI/CD for AWS
+name: Spring Boot Backend CI/CD For AWS (Advanced)
 
 on:
-push:
-branches:
-- main
-- master
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag to deploy'
+        required: false
+        default: 'latest'    
 
 jobs:
-build-deploy:
-runs-on: ubuntu-latest
+  build-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+ 
+    steps:
+      # 1️⃣ Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
 
-steps:
-  # Checkout
-  - name: Checkout code
-    uses: actions/checkout@v4
+      # 2️⃣ Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
-  # Configure AWS
-  - name: Configure AWS Credentials
-    uses: aws-actions/configure-aws-credentials@v4
-    with:
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      aws-region: ${{ secrets.AWS_REGION }}
+      # 3️⃣ Build
+      - name: Build JAR
+        run: mvn clean package -DskipTests
 
-  # Login to ECR
-  - name: Login to Amazon ECR
-    id: login-ecr
-    uses: aws-actions/amazon-ecr-login@v2
+      # 4️⃣ AWS Auth
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-  # Build & Push Image
-  - name: Build, Tag, Push Docker Image
-    env:
-      REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      IMAGE_TAG: latest
-    run: |
-      docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-      docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+      # 5️⃣ Login ECR
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-  # Deploy to EC2
-  - name: Deploy to EC2 via SSH
-    uses: appleboy/ssh-action@v1.0.3
-    with:
-      host: ${{ secrets.EC2_HOST }}
-      username: ${{ secrets.EC2_USERNAME }}
-      key: ${{ secrets.EC2_SSH_KEY }}
-      script: |
-        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} \
-        | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+      # 6️⃣ Build & Push
+      - name: Build & Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+            ${{ steps.ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
-        docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+      # 7️⃣ Copy infra files
+      - name: Copy compose + nginx
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose-prod.yml,nginx/*"
+          target: "${{ secrets.APP_DIR }}"
 
-        docker stop advance-todo-backend || true
-        docker rm advance-todo-backend || true
+      # 8️⃣ Deploy
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
 
-        docker run -d -p 8080:8080 --name advance-todo-backend \
-        ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+            APP_DIR=${{ secrets.APP_DIR }}
+            REGION=${{ secrets.AWS_REGION }}
+            ACCOUNT=${{ secrets.AWS_ACCOUNT_ID }}
+            REPO=${{ secrets.ECR_REPOSITORY }}
 
+            cd $APP_DIR
 
+            echo "🚀 Starting deployment..."
+
+            # Ensure Docker
+            if ! command -v docker &> /dev/null; then
+              sudo yum install docker -y
+              sudo service docker start
+              sudo usermod -aG docker ec2-user
+            fi
+
+            # Ensure Compose
+            if ! docker compose version &> /dev/null; then
+              sudo curl -L https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            # ECR login (IAM role recommended)
+            aws ecr get-login-password --region $REGION \
+            | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.$REGION.amazonaws.com
+
+            # 🔥 Generate dynamic env file from secrets
+            cat > .env.production <<EOF
+            DATABASE_URL=${{ secrets.DB_URL }}
+            DATABASE_USER=${{ secrets.DB_USERNAME }}
+            DATABASE_PWD=${{ secrets.DB_PASSWORD }}
+            DATABASE_NAME=${{ secrets.DB_NAME }}
+
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            REDIS_SSL=${{ secrets.REDIS_SSL }}
+
+            API_REQUEST_LIMIT=${{ secrets.API_REQUEST_LIMIT }}
+            API_REQUEST_WINDOW_TIME=${{ secrets.API_REQUEST_WINDOW_TIME }}
+            API_REQUEST_WAIT_TIME=${{ secrets.API_REQUEST_WAIT_TIME }}
+
+            APP_PORT=${{ secrets.APP_PORT }}
+
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_ACCESS_TOKEN_EXPIRATION=${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}
+            JWT_REFRESH_TOKEN_EXPIRATION=${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}
+            
+            
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
+            REDIRECT_URI=${{ secrets.REDIRECT_URI }} 
+
+            SPRING_PROFILES_ACTIVE=prod
+            APP_PORT=${{ secrets.APP_PORT }}
+            EOF
+
+            echo "📦 Pulling latest images..."
+            docker compose -f docker-compose-prod.yml pull
+
+            echo "🔄 Updating services..."
+            docker compose -f docker-compose-prod.yml up -d
+
+            echo "🧹 Cleaning old images..."
+            docker image prune -af
+
+            echo "✅ Deployment completed"
 
 
 
@@ -157,6 +240,8 @@ steps:
 #           host: ${{ secrets.EC2_HOST }}
 #           username: ${{ secrets.EC2_USERNAME }}
 #           key: ${{ secrets.EC2_SSH_KEY }}
+#           source: "docker-compose-prod.yml,nginx/*"
+#           target: "/home/ec2-user/app"
 #           script: |
 #             IMAGE_TAG="${{ github.sha }}"
 #             ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
