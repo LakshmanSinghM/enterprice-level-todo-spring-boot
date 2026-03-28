@@ -42,7 +42,8 @@ services:
       - todo-network
 
   app:
-    image: advance-todo-backend
+    # image: advance-todo-backend
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:latest
     build: .
     container_name: advance-todo-app-container
     restart: always
