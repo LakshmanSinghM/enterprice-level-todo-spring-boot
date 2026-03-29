@@ -29,7 +29,7 @@ jobs:
 
       # 3️⃣ Build
       - name: Build JAR
-        run: mvn clean package -DskipTests
+        run: mvn clean package -Dski                                                                                                                                                                                      pTests
 
       # 4️⃣ AWS Auth
       - name: Configure AWS
@@ -122,6 +122,17 @@ jobs:
             JWT_ACCESS_TOKEN_EXPIRATION=${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}
             JWT_REFRESH_TOKEN_EXPIRATION=${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}
             
+            # need in docker compose some are extra
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            EC2_HOST=${{ secrets.EC2_HOST }}
+            ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}
+            EC2_USERNAME=${{ secrets.EC2_USERNAME }}
+            EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY }}
+            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+            
+
             
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
@@ -140,35 +151,6 @@ jobs:
             docker image prune -af
 
             echo "✅ Deployment completed"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
