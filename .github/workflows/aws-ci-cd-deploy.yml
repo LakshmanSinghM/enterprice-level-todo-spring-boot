@@ -102,10 +102,10 @@ jobs:
 
             # 🔥 Generate dynamic env file from secrets
             cat > .env.production <<EOF
-            DATABASE_URL=${{ secrets.DB_URL }}
-            DATABASE_USER=${{ secrets.DB_USERNAME }}
-            DATABASE_PWD=${{ secrets.DB_PASSWORD }}
-            DATABASE_NAME=${{ secrets.DB_NAME }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            DATABASE_USER=${{ secrets.DATABASE_USER }}
+            DATABASE_PWD=${{ secrets.DATABASE_PWD }}
+            DATABASE_NAME=${{ secrets.DATABASE_NAME }}
 
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
@@ -128,7 +128,6 @@ jobs:
             REDIRECT_URI=${{ secrets.REDIRECT_URI }} 
 
             SPRING_PROFILES_ACTIVE=prod
-            APP_PORT=${{ secrets.APP_PORT }}
             EOF
 
             echo "📦 Pulling latest images..."
