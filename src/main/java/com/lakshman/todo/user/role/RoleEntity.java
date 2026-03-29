@@ -33,6 +33,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString(exclude = { "permissions" })
 public class RoleEntity extends BaseEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
