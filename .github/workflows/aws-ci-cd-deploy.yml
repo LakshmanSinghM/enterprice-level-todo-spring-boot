@@ -92,7 +92,7 @@ jobs:
 
             # Ensure Compose
             if ! docker compose version &> /dev/null; then
-              sudo curl -L https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
@@ -100,7 +100,7 @@ jobs:
             aws ecr get-login-password --region $REGION \
             | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.$REGION.amazonaws.com
 
-            # 🔥 Generate dynamic env file from secrets
+            # Generate dynamic env file from secrets
             cat > .env.production <<EOF
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             DATABASE_USER=${{ secrets.DATABASE_USER }}
@@ -141,20 +141,16 @@ jobs:
             SPRING_PROFILES_ACTIVE=prod
             EOF
 
-            echo "📦 Pulling latest images..."
+            echo "Pulling latest images..."
             docker compose -f docker-compose-prod.yml pull
 
-            echo "🔄 Updating services..."
+            echo "Updating services..."
             docker compose -f docker-compose-prod.yml up -d
 
-            echo "🧹 Cleaning old images..."
+            echo "Cleaning old images..."
             docker image prune -af
 
-            echo "✅ Deployment completed"
-
-
-
-
+            echo "Deployment completed"
 
 
 
