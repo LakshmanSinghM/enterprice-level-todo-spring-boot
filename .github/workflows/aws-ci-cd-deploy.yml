@@ -141,10 +141,10 @@ jobs:
             EOF
 
             echo "Pulling latest images..."
-            docker compose -f docker-compose-prod.yml pull
+            docker-compose --env-file .env.production -f docker-compose-prod.yml pull
 
             echo "Updating services..."
-            docker compose -f docker-compose-prod.yml up -d
+            docker-compose --env-file .env.production -f docker-compose-prod.yml up -d
 
             echo "Cleaning old images..."
             docker image prune -af
