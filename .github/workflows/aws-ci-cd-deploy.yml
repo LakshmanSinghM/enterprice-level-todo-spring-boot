@@ -29,7 +29,7 @@ jobs:
 
       # 3️⃣ Build
       - name: Build JAR
-        run: mvn clean package -Dski                                                                                                                                                                                      pTests
+        run: mvn clean package -DskipTests
 
       # 4️⃣ AWS Auth
       - name: Configure AWS
