@@ -23,12 +23,13 @@ services:
     env_file:
       - .env.production
     restart: always
-    # environment:
-    #   POSTGRES_USER: ${DATABASE_USER}
-    #   POSTGRES_PASSWORD: ${DATABASE_PWD}
-    #   POSTGRES_DB: ${DATABASE_NAME}
-    # ports:
-    #   - "5432:5432" left side machine/local port and right side container port
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PWD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5432:5432"
+      # left side machine/local port and right side container port
     volumes:
       - postgres_data:/var/lib/postgresql/data
     expose:
