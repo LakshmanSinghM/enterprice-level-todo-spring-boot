@@ -5,9 +5,16 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag to deploy'
+        required: false
+        default: 'latest'       
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }} 
     env:
       IMAGE_NAME: lakshmansde/advance-todo
       IMAGE_TAG: ${{ github.sha }}
