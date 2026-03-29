@@ -80,8 +80,10 @@ services:
     image: redis:7
     container_name: todo-redis
     restart: always
-    env_file:
-      - .env.production
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: >
+      sh -c "redis-server --requirepass $REDIS_PASSWORD"  
     volumes:
       - redis_data:/data
     expose:
