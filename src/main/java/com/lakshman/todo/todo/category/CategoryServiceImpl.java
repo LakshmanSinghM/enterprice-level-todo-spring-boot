@@ -9,8 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.lakshman.todo.common.dto.ApiResponse;
-import com.lakshman.todo.common.dto.ApiResponseWithPagination;
-import com.lakshman.todo.common.dto.Pagination;
+import com.lakshman.todo.common.dto.ApiResponseWithPagination; 
 import com.lakshman.todo.common.utils.ResponseBuilders;
 import com.lakshman.todo.exception.ResourceAlreadyExists;
 import com.lakshman.todo.todo.category.constant.CategoryCacheNames;

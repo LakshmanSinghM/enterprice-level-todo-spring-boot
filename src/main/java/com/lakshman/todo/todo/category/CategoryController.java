@@ -33,14 +33,16 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<ApiResponse<CategoryReponseDto>> createTodoCategory(
             @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
+
         log.info("The request coming to the category controller ");
+
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(categoryRequestDto));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponseWithPagination<List<CategoryReponseDto>>> getTodos(
             @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size){
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("The request coming to the category controller ");
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.getTodos(page, size));
     }
