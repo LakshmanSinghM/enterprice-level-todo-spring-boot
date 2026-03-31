@@ -28,6 +28,7 @@ spring:
       hikari:
         maximum-pool-size: 20
         minimum-idle: 5
+
       # JPA configuration
   jpa:
     hibernate:
@@ -77,5 +78,10 @@ management:
 #       springframework: DEBUG
 #     com:
 #       lakshman: DEBUG
+
+  elasticsearch:
+    uris: ${ELASTIC_URL}
+    username: ${ELASTIC_USERNAME}
+    password: ${ELASTIC_PWD}
 
   # later we will replace these values with the environment variable names
