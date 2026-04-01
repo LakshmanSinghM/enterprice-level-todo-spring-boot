@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lakshman.todo.common.configuration.redis.RateLimit;
 import com.lakshman.todo.common.dto.ApiResponse;
 import com.lakshman.todo.common.utils.ResponseBuilders;
 import com.lakshman.todo.contants.enums.RoleType;
@@ -25,6 +26,7 @@ public class AuthController {
         private final AuthService authService;
 
         @PostMapping("/google")
+        @RateLimit(limit = 1, waitTime = 0, window = 60)
         public ResponseEntity<ApiResponse<AuthResponse>> googleCallBack(
                         @Valid @RequestBody AuthRequest.GoogleRequest request, HttpServletResponse response) {
                 log.info("The google auth request is like " + request);

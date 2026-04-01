@@ -37,11 +37,11 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         int waitTime = properties.getApiWaitTime();
 
         // override if annotation present
-        if (rateLimit != null) {
-            limit = rateLimit.limit();
-            window = rateLimit.window();
-            waitTime = rateLimit.waitTime();
-        }
+        // if (rateLimit != null) {
+        // limit = rateLimit.limit();
+        // window = rateLimit.window();
+        // waitTime = rateLimit.waitTime();
+        // }
 
         String userId = request.getHeader("X-USER-ID");
 
@@ -50,8 +50,8 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
         String api = request.getRequestURI();
 
-        log.info("Rate limit interceptor running with the values userId, api, limit, window, waitTime " + userId, api,
-                limit, window, waitTime);
+        log.info("Rate limit interceptor running: userId={}, api={}, limit={}, window={}, waitTime={}",
+                userId, api, limit, window, waitTime);
 
         boolean allowed = limiter.allow(userId, api, limit, window, waitTime);
 

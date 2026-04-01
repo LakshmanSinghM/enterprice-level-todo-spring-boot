@@ -17,7 +17,9 @@ public class WebCorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(interceptor);
+        registry.addInterceptor(interceptor)
+                .addPathPatterns("/**"); // apply to all APIs
+
     }
 
     @Override
