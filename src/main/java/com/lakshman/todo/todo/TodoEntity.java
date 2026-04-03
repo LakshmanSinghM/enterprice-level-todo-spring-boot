@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.lakshman.todo.base.BaseEntity;
 import com.lakshman.todo.todo.category.CategoryEntity;
+import com.lakshman.todo.todo.dto.Priority;
 import com.lakshman.todo.user.UserEntity;
 
 import jakarta.persistence.Column;
@@ -32,7 +33,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TodoEntity extends BaseEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,6 +42,9 @@ public class TodoEntity extends BaseEntity {
     private String title;
 
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Priority priority = Priority.LOW;
 
     @Enumerated(EnumType.STRING)
     private TodoStatus status = TodoStatus.PENDING;
