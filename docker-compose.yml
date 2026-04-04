@@ -68,8 +68,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      elasticsearch:
-        condition: service_started  
+      # elasticsearch:
+      #   condition: service_started  
     networks:
       - todo-network
 
@@ -94,19 +94,19 @@ services:
     networks:
       - todo-network
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.3.2
-    container_name: todo-elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false   # disable auth for local dev
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
-    ports:
-      - "9200:9200"
-    volumes:
-      - es_data:/usr/share/elasticsearch/data
-    networks:
-      - todo-network
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:9.3.2
+  #   container_name: todo-elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false   # disable auth for local dev
+  #     - ES_JAVA_OPTS=-Xms512m -Xmx512m
+  #   ports:
+  #     - "9200:9200"
+  #   volumes:
+  #     - es_data:/usr/share/elasticsearch/data
+  #   networks:
+  #     - todo-network
 
 networks:
   todo-network:
@@ -115,7 +115,7 @@ networks:
 volumes:
   postgres_data:
   redis_data:
-  es_data:
+  # es_data:
 
     # Reset full docker stuff
     # docker system prune -a --volumes
