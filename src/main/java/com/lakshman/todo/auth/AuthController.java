@@ -47,6 +47,7 @@ public class AuthController {
         }
 
         @PostMapping("/login")
+        @RateLimit(limit = 2, waitTime = 10, window = 60)
         public ResponseEntity<ApiResponse<AuthResponse>> loginUserUsingEmailAndPassword(
                         @Valid @RequestBody LoginRequest request, HttpServletResponse response) {
                 log.info("The login req body is" + request);

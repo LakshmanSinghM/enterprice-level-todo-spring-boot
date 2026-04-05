@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = extractToken(request);
+        String token = jwtHelper.extractToken(request);
         boolean validValidation = jwtHelper.validateToken(token);
 
         if (token != null && validValidation) {
@@ -66,27 +66,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // protected boolean shouldNotFilter(HttpServletRequest request) {
     // return request.getServletPath().startsWith("/api/v1/auth");
     // }
-
-    private String extractToken(HttpServletRequest request) {
-
-        /* Check Authorization Header */
-
-        String authHeader = request.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-
-        /* Check Cookies */
-
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-
-        return null;
-    }
 }

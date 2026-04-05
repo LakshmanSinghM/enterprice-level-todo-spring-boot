@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
- 
 
 import org.springframework.stereotype.Component;
 
@@ -18,12 +17,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 @RequiredArgsConstructor
 public class JWTHelper {
 
-    private final JWTProperties jwtProperties; 
+    private final JWTProperties jwtProperties;
 
     // public JWTHelper(JWTProperties jwtProperties) {
     // this.jwtProperties = jwtProperties;
@@ -59,6 +60,10 @@ public class JWTHelper {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
+    // public String extractUsernameOrUserId(String token) {
+    //     return extractClaim(token, Claims::getSubject);
+    // }
 
     public List<String> extractRoles(String token) {
         return extractAllClaims(token).get("roles", List.class);
@@ -101,5 +106,27 @@ public class JWTHelper {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String extractToken(HttpServletRequest request) {
+
+        /* Check Authorization Header */
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+
+        /* Check Cookies */
+
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
